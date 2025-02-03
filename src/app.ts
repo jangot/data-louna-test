@@ -6,7 +6,7 @@ import logger from 'morgan';
 
 import { indexRouter } from './routes';
 import { usersRouter } from './routes/users/users';
-import { authRouter } from './routes/auth';
+import { authRouter } from './routes/auth/auth';
 
 export const app = express();
 
