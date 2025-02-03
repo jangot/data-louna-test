@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include('./partials/head'); %>
+    </head>
+    <body>
+    <%- include('./partials/navigation'); %>
+
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col"></div>
+            <form class="col" id="user-form" method="post" action="/users">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="username" value="jangot">
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="password" value="123">
+                </div>
+                <div class="mb-3">
+                    <button type="button" id="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+            <div class="col"></div>
+        </div>
+    </div>
+
+    <%- include('./partials/footer'); %>
+    <script>
+        document.getElementById('submit').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/users', {
+                method: 'POST',
+                body: JSON.stringify({ username, password }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            console.log(json);
+        });
+
+    </script>
+    </body>
+</html>
