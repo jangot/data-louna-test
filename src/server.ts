@@ -1,15 +1,16 @@
+import dotenv from 'dotenv';
 import debug from 'debug';
 
 import { createServer } from 'http';
 import { app } from './app';
 
+dotenv.config();
 debug('data-louna-test:server')
 
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const server = createServer(app);
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
