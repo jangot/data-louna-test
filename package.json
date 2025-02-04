@@ -9,6 +9,7 @@
     "migrate:up": "npm run build && node scripts/run-migration.js"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",

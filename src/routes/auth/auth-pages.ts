@@ -12,5 +12,5 @@ authPagesRouter.get('/signup', getForbidAuthorizedPageMiddleware(), (req: Reques
 });
 
 authPagesRouter.get('/settings', getPageAuthMiddleware(), (req: Request, res: Response, next: NextFunction) =>  {
-    res.render('settings', { title: 'Signup' });
+    res.render('settings', { title: 'Settings' });
 });
