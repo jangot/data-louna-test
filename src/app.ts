@@ -6,7 +6,7 @@ import logger from 'morgan';
 
 import { indexRouter } from './routes';
 import { usersRouter } from './routes/users/users';
-import { authRouter } from './routes/auth/auth';
+import { authPagesRouter } from './routes/auth/auth-pages';
 
 export const app = express();
 
@@ -22,8 +22,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
+app.use('/auth', authPagesRouter);
+app.use('/api/users', usersRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(createError(404));

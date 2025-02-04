@@ -19,6 +19,11 @@ export const usersService = {
 
         return !!user;
     },
+    getUserByLoginAndPassword: async (username: string, rowPassword: string) => {
+        const password = hashPassword(rowPassword);
+
+        return list.find((it) => it.username === username && it.password === password);
+    },
     addUser: async (user: Omit<User, 'id'>): Promise<User> => {
         const item = {
             ...user,
