@@ -8,6 +8,7 @@ import { indexRouter } from './routes';
 import { usersRouter } from './routes/users/users';
 import { authPagesRouter } from './routes/auth/auth-pages';
 import { authRouter } from './routes/auth/auth';
+import { skinportRouter } from './routes/skinport';
 
 export const app = express();
 
@@ -27,6 +28,7 @@ export const app = express();
   app.use('/auth', authPagesRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
+  app.use('/skinport', skinportRouter);
 
   app.use((req: Request, res: Response, next: NextFunction) => {
     next(createError(404));

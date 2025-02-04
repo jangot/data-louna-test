@@ -2,6 +2,8 @@ import { SessionStorage } from './services/session-storage.service';
 import { UsersService } from './services/users.service';
 import { DatabaseService } from './services/database.service';
 import { RedisService } from './services/redis.service';
+import { SkinportClient } from './services/skinport-client';
+import { SkinportService } from './services/skinport.service';
 
 export interface ApplicationService {
     init: () => Promise<void>,
@@ -13,4 +15,6 @@ export const serviceRegister = {
     usersService: new UsersService(),
     db: new DatabaseService(),
     redis: new RedisService(),
+    skinportClient: new SkinportClient(),
+    skinportService: new SkinportService(),
 }
