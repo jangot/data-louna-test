@@ -44,6 +44,10 @@
             if (json.message) {
                 document.getElementById('result').innerHTML = json.message;
             }
+
+            if (response.ok) {
+                window.location.replace('/');
+            }
         });
 
     </script>

@@ -8,15 +8,10 @@ import { indexRouter } from './routes';
 import { usersRouter } from './routes/users/users';
 import { authPagesRouter } from './routes/auth/auth-pages';
 import { authRouter } from './routes/auth/auth';
-import { serviceRegister } from './service-register';
 
 export const app = express();
 
 (async () => {
-  for (const service of Object.values(serviceRegister)) {
-    await service.init();
-  }
-
   // view engine setup
   app.set('views', path.join(__dirname, '../views'));
   app.set('view engine', 'ejs');
@@ -44,8 +39,11 @@ export const app = express();
 
     // render the error page
     res.status(err.status || 500);
-    // TODO add correct answer for API
-    res.render('error');
+    if (/\/api\//.test(req.url)) {
+      res.json({ error: err.message })
+    } else {
+      res.render('error');
+    }
   });
 })()
 

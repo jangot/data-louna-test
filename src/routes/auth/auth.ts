@@ -6,6 +6,7 @@ import { serviceRegister } from '../../service-register';
 import { LoginRequestDto } from './dtos/login-request.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dtos/user-response.dto';
+import { SESSION_COOKIE_NAME } from '../../constants';
 
 export const authRouter = express.Router();
 
@@ -28,7 +29,7 @@ authRouter.post('/login', validateBody(LoginRequestDto), async (req: CreateUserR
     const sessionId = randomBytes(32).toString('hex');
     await serviceRegister.sessionStorage.saveSession(sessionId, user, sessionLiveTime);
 
-    res.cookie('session_token', sessionId, {
+    res.cookie(SESSION_COOKIE_NAME, sessionId, {
         httpOnly: true,
         secure: false, // TODO must be true for production
         sameSite: 'strict',
@@ -37,3 +38,12 @@ authRouter.post('/login', validateBody(LoginRequestDto), async (req: CreateUserR
 
     res.json({ data: plainToInstance(UserResponseDto, user, { excludeExtraneousValues: true }) });
 });
+
+authRouter.get('/logout', async (req: Request, res: Response, next: NextFunction) => {
+    if (req.cookies[SESSION_COOKIE_NAME]) {
+        await serviceRegister.sessionStorage.clearSession(req.cookies[SESSION_COOKIE_NAME]);
+        res.clearCookie(SESSION_COOKIE_NAME)
+    }
+
+    res.redirect('/')
+})

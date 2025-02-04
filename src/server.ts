@@ -3,6 +3,7 @@ import debug from 'debug';
 
 import { createServer } from 'http';
 import { app } from './app';
+import { serviceRegister } from './service-register';
 
 dotenv.config();
 debug('data-louna-test:server')
@@ -11,9 +12,35 @@ const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 const server = createServer(app);
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+
+async function initServices() {
+  for (const service of Object.values(serviceRegister)) {
+    await service.init();
+  }
+}
+
+async function closeServices() {
+  for (const service of Object.values(serviceRegister)) {
+    await service.destroy();
+  }
+}
+
+function shutdown() {
+  console.log('finish server and services');
+  server.close(async () => {
+    console.log('HTTP-server was stopped');
+    await closeServices();
+    console.log('Services were stopped');
+    process.exit(0);
+  });
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('exit', async () => {
+  await closeServices();
+  console.log('Application finished');
+});
 
 function normalizePort(val: string) {
   const port = parseInt(val, 10);
@@ -59,3 +86,11 @@ function onListening() {
     : 'port ' + addr?.port;
   debug('Listening on ' + bind);
 }
+
+(async () => {
+  await initServices();
+
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+})()
