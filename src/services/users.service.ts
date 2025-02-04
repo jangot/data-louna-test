@@ -1,12 +1,7 @@
 import { createHash } from 'crypto';
+import { UserModel } from '../models/user.model';
 
-interface User {
-    id: string;
-    username: string;
-    password: string;
-}
-
-const list: User[] = [];
+const list: UserModel[] = [];
 
 function hashPassword(password: string): string {
     return createHash('md5').update(password).digest('hex');
@@ -19,12 +14,12 @@ export const usersService = {
 
         return !!user;
     },
-    getUserByLoginAndPassword: async (username: string, rowPassword: string) => {
+    getUserByLoginAndPassword: async (username: string, rowPassword: string): Promise<UserModel | undefined> => {
         const password = hashPassword(rowPassword);
 
         return list.find((it) => it.username === username && it.password === password);
     },
-    addUser: async (user: Omit<User, 'id'>): Promise<User> => {
+    addUser: async (user: Omit<UserModel, 'id'>): Promise<UserModel> => {
         const item = {
             ...user,
             id: new Date().getTime().toString(),

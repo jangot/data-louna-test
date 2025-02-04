@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto';
 import { validateBody } from '../../middlewares/validate-body';
 import { usersService } from '../../services/users.service';
 import { LoginDto } from './dtos/login.dto';
+import { serviceRegister } from '../../service-register';
 
 export const authRouter = express.Router();
 
@@ -12,7 +13,7 @@ type CreateUserRequest = Request<{}, {}, LoginDto>;
 authRouter.post('/login', validateBody(LoginDto), async (req: CreateUserRequest, res: Response, next: NextFunction) =>  {
     const { username, password } = req.body;
 
-    const user = usersService.getUserByLoginAndPassword(username, password);
+    const user = await usersService.getUserByLoginAndPassword(username, password);
 
     if (!user) {
         res.status(404);
@@ -21,10 +22,10 @@ authRouter.post('/login', validateBody(LoginDto), async (req: CreateUserRequest,
         return;
     }
 
-    const sessionToken = randomBytes(32).toString('hex');
-    // TODO save the user to Redis
+    const sessionId = randomBytes(32).toString('hex');
+    await serviceRegister.sessionStorage.saveSession(sessionId, user);
 
-    res.cookie('session_token', sessionToken, {
+    res.cookie('session_token', sessionId, {
         httpOnly: true,
         secure: false, // TODO must be true for production
         sameSite: 'strict',
