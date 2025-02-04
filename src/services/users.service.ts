@@ -37,7 +37,7 @@ export class UsersService extends AbstractService {
         return result.rows[0];
     }
 
-    async setNewPassword(id: string, rawPassword: string) {
+    async setNewPassword(id: number, rawPassword: string) {
         const password = hashPassword(rawPassword);
 
         await serviceRegister.db.getClient().query(

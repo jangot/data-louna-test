@@ -1,22 +1,22 @@
 import { UserModel } from '../models/user.model';
 import { AbstractService } from './abstract-service';
-
-const sessions = new Map<string, UserModel>;
+import { serviceRegister } from '../service-register';
 
 export class SessionStorage extends AbstractService {
     async saveSession (sessionId: string, user: UserModel, time: number): Promise<void> {
-        sessions.set(sessionId, user);
-        setTimeout(() => {
-            sessions.delete(sessionId);
-        }, time);
+        await serviceRegister.redis.getClient().set(sessionId, JSON.stringify(user), { EX: time });
     }
 
     async clearSession(sessionId: string) {
-        sessions.delete(sessionId);
+        await serviceRegister.redis.getClient().del(sessionId);
     }
 
-    async getUserBySessionId(id: string): Promise<UserModel | undefined> {
-        return sessions.get(id);
+    async getUserBySessionId(sessionId: string): Promise<UserModel | undefined> {
+        const data = await serviceRegister.redis.getClient().get(sessionId);
+        if (!data) {
+            return undefined;
+        }
+        return JSON.parse(data);
     }
 }
 

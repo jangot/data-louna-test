@@ -12,7 +12,7 @@ declare module 'express-serve-static-core' {
 
 export function getAuthMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME]);
+        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
         if (!user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
@@ -24,7 +24,7 @@ export function getAuthMiddleware(): (req: Request, res: any, next: (error?: any
 
 export function getPageAuthMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME]);
+        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
         if (!user) {
             res.redirect('/auth/login');
             return
@@ -37,7 +37,7 @@ export function getPageAuthMiddleware(): (req: Request, res: any, next: (error?:
 
 export function getForbidAuthorizedPageMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME]);
+        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
         if (user) {
             res.redirect('/auth/settings');
             return

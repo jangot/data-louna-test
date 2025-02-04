@@ -35,9 +35,7 @@ usersRouter.post('/:id',
     getAuthMiddleware(),
     validateBody(UpdateUserDto),
     async (req: UpdateUserRequest, res: Response, next: NextFunction) => {
-        console.log('----------')
-        console.log(req.params.id, req.user.id)
-        if (req.params.id !== req.user.id) {
+        if (Number(req.params.id) !== req.user.id) {
             res.status(StatusCodes.FORBIDDEN);
             res.json({ data: { message: 'No access' } });
             return;

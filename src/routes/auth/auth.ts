@@ -6,7 +6,7 @@ import { serviceRegister } from '../../service-register';
 import { LoginRequestDto } from './dtos/login-request.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dtos/user-response.dto';
-import { SESSION_COOKIE_NAME } from '../../constants';
+import { SESSION_COOKIE_NAME, SESSION_TIME_SECONDS } from '../../constants';
 
 export const authRouter = express.Router();
 
@@ -24,16 +24,14 @@ authRouter.post('/login', validateBody(LoginRequestDto), async (req: CreateUserR
         return;
     }
 
-    const sessionLiveTime = 1000 * 60 * 60 * 24;
-
     const sessionId = randomBytes(32).toString('hex');
-    await serviceRegister.sessionStorage.saveSession(sessionId, user, sessionLiveTime);
+    await serviceRegister.sessionStorage.saveSession(sessionId, user, SESSION_TIME_SECONDS);
 
     res.cookie(SESSION_COOKIE_NAME, sessionId, {
         httpOnly: true,
         secure: false, // TODO must be true for production
         sameSite: 'strict',
-        maxAge: sessionLiveTime,
+        maxAge: SESSION_TIME_SECONDS * 1000,
     });
 
     res.json({ data: plainToInstance(UserResponseDto, user, { excludeExtraneousValues: true }) });
