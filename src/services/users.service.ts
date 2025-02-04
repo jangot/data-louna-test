@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import { UserModel } from '../models/user.model';
+import { ApplicationService } from '../service-register';
 
 const list: UserModel[] = [];
 
@@ -7,19 +8,19 @@ function hashPassword(password: string): string {
     return createHash('md5').update(password).digest('hex');
 }
 
-
-export const usersService = {
-    isUserNameExists: async (username: string): Promise<boolean> => {
+export class UsersService implements ApplicationService {
+    async init (): Promise<void> {};
+    async isUserNameExists(username: string): Promise<boolean> {
         const user = list.find((user) => user.username === username);
 
         return !!user;
-    },
-    getUserByLoginAndPassword: async (username: string, rowPassword: string): Promise<UserModel | undefined> => {
+    }
+    async getUserByLoginAndPassword(username: string, rowPassword: string): Promise<UserModel | undefined> {
         const password = hashPassword(rowPassword);
 
         return list.find((it) => it.username === username && it.password === password);
-    },
-    addUser: async (user: Omit<UserModel, 'id'>): Promise<UserModel> => {
+    }
+    async addUser(user: Omit<UserModel, 'id'>): Promise<UserModel> {
         const item = {
             ...user,
             id: new Date().getTime().toString(),
@@ -29,8 +30,15 @@ export const usersService = {
         list.push(item);
 
         return item;
-    },
-    find: async (user: string) => {
+    }
 
+    async setNewPassword(id: string, password: string) {
+        const user = list.find((user) => user.id === id);
+        if (!user) {
+            // TODO create correct exception
+            throw new Error(`User ${id} not found`);
+        }
+        user.password = hashPassword(password);
     }
 }
+

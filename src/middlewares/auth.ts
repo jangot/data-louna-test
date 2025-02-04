@@ -11,7 +11,7 @@ declare module 'express-serve-static-core' {
 
 export function getAuthMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies.session);
+        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies.session_token);
         if (!user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }

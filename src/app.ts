@@ -7,6 +7,7 @@ import logger from 'morgan';
 import { indexRouter } from './routes';
 import { usersRouter } from './routes/users/users';
 import { authPagesRouter } from './routes/auth/auth-pages';
+import { authRouter } from './routes/auth/auth';
 import { serviceRegister } from './service-register';
 
 export const app = express();
@@ -29,6 +30,7 @@ export const app = express();
 
   app.use('/', indexRouter);
   app.use('/auth', authPagesRouter);
+  app.use('/api/auth', authRouter);
   app.use('/api/users', usersRouter);
 
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -42,6 +44,7 @@ export const app = express();
 
     // render the error page
     res.status(err.status || 500);
+    // TODO add correct answer for API
     res.render('error');
   });
 })()

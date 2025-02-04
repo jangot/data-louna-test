@@ -2,18 +2,19 @@ import express, { NextFunction, Request, Response } from 'express';
 import { randomBytes } from 'crypto';
 
 import { validateBody } from '../../middlewares/validate-body';
-import { usersService } from '../../services/users.service';
-import { LoginDto } from './dtos/login.dto';
 import { serviceRegister } from '../../service-register';
+import { LoginRequestDto } from './dtos/login-request.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from './dtos/user-response.dto';
 
 export const authRouter = express.Router();
 
-type CreateUserRequest = Request<{}, {}, LoginDto>;
+type CreateUserRequest = Request<{}, {}, LoginRequestDto>;
 
-authRouter.post('/login', validateBody(LoginDto), async (req: CreateUserRequest, res: Response, next: NextFunction) =>  {
+authRouter.post('/login', validateBody(LoginRequestDto), async (req: CreateUserRequest, res: Response, next: NextFunction) =>  {
     const { username, password } = req.body;
 
-    const user = await usersService.getUserByLoginAndPassword(username, password);
+    const user = await serviceRegister.usersService.getUserByLoginAndPassword(username, password);
 
     if (!user) {
         res.status(404);
@@ -22,15 +23,17 @@ authRouter.post('/login', validateBody(LoginDto), async (req: CreateUserRequest,
         return;
     }
 
+    const sessionLiveTime = 1000 * 60 * 60 * 24;
+
     const sessionId = randomBytes(32).toString('hex');
-    await serviceRegister.sessionStorage.saveSession(sessionId, user);
+    await serviceRegister.sessionStorage.saveSession(sessionId, user, sessionLiveTime);
 
     res.cookie('session_token', sessionId, {
         httpOnly: true,
         secure: false, // TODO must be true for production
         sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: sessionLiveTime,
     });
 
-    res.json({ data: user });
+    res.json({ data: plainToInstance(UserResponseDto, user, { excludeExtraneousValues: true }) });
 });

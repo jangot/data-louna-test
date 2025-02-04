@@ -11,14 +11,6 @@
             <div class="col"></div>
             <form class="col" id="user-form" method="post" action="/users">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" aria-describedby="usernameFeedback" required value="jangot">
-                    <div id="usernameFeedback" class="invalid-feedback">
-                        Username is required.
-                    </div>
-                </div>
-
-                <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" aria-describedby="passwordFeedback" required value="1q2w3e4r">
                     <div id="passwordFeedback" class="invalid-feedback">
@@ -38,38 +30,37 @@
                     <button type="button" id="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
-            <div class="col"></div>
+            <div class="col" id="result"></div>
         </div>
     </div>
 
     <%- include('./partials/footer'); %>
     <script>
-        function highlightFields({ username, password, passwordConfirm }) {
-            document.getElementById('username').classList.toggle('is-invalid', !username)
+        function highlightFields({ password, passwordConfirm }) {
             document.getElementById('password').classList.toggle('is-invalid', !password)
             document.getElementById('passwordConfirm').classList.toggle('is-invalid', !passwordConfirm)
         }
         document.getElementById('submit').addEventListener('click', async () => {
-            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const passwordConfirm = document.getElementById('passwordConfirm').value;
 
-            highlightFields({ username, password, passwordConfirm });
-            if (!username || !password || !passwordConfirm) {
+            highlightFields({ password, passwordConfirm });
+            if (!password || !passwordConfirm) {
                 return;
             }
+            const me = await fetch('/api/users/me');
+            if (!me.ok) {
+                window.location.replace('/auth/login');
+            }
+            const { data } = await me.json();
 
-            const response = await fetch('/api/users', {
+            const response = await fetch(`/api/users/${data.id}`, {
                 method: 'POST',
-                body: JSON.stringify({ username, password, passwordConfirm }),
+                body: JSON.stringify({ password, passwordConfirm }),
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-
-            if (response.ok) {
-                window.location.replace('/auth/login');
-            }
 
             const json = await response.json();
             if (json.errors) {
@@ -77,6 +68,8 @@
                     document.getElementById(field).classList.add('is-invalid');
                     document.getElementById(`${field}Feedback`).innerHTML = Object.values(constraints).join(', ');
                 });
+            } else {
+                document.getElementById('result').innerHTML = 'Success'
             }
         });
 
