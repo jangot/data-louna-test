@@ -9,6 +9,7 @@ import { usersRouter } from './routes/users/users';
 import { authPagesRouter } from './routes/auth/auth-pages';
 import { authRouter } from './routes/auth/auth';
 import { skinportRouter } from './routes/skinport';
+import { getCacheMiddleware } from './middlewares/cache-middleware';
 
 export const app = express();
 
@@ -24,6 +25,7 @@ export const app = express();
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, '../public')));
 
+  app.use(getCacheMiddleware());
   app.use('/', indexRouter);
   app.use('/auth', authPagesRouter);
   app.use('/api/auth', authRouter);

@@ -26,7 +26,7 @@ export class SkinportClient extends AbstractService {
 
     async loadList(tradable: boolean): Promise<SkinportItem[]> {
         try {
-            const { data } = await this.client.get<SkinportItem[]>('/items', { params: { tradable } });
+            const { data } = await this.client.get<SkinportItem[]>('/items', { params: { tradable: tradable ? 1 : 0 } });
 
             return data.filter((item) => !!item.market_hash_name);
         } catch (error) {

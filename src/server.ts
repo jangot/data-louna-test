@@ -1,12 +1,10 @@
 import dotenv from 'dotenv';
-import debug from 'debug';
 
 import { createServer } from 'http';
 import { app } from './app';
 import { serviceRegister } from './service-register';
 
 dotenv.config();
-debug('data-louna-test:server')
 
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -84,7 +82,7 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr?.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }
 
 (async () => {

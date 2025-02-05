@@ -44,7 +44,6 @@ export class SkinportService extends AbstractService {
             result.set(item.market_hash_name, product);
         });
 
-
         return [...result.values()];
     }
 
@@ -52,6 +51,7 @@ export class SkinportService extends AbstractService {
         const cacheKey = tradable ? TRADABLE_CACHE_KEY : NON_TRADABLE_CACHE_KEY;
         const cache = await this.getFromCache(cacheKey);
         if (cache) {
+            console.log(cacheKey, 'got from cache');
             return cache;
         }
 
@@ -59,7 +59,7 @@ export class SkinportService extends AbstractService {
             const list = await serviceRegister.skinportClient.loadList(tradable);
 
             this.saveToCache(cacheKey, list).then(() => console.log(cacheKey, 'saved'));
-            console.log(list)
+
             return list;
         } catch (error) {
             return [];
@@ -68,7 +68,7 @@ export class SkinportService extends AbstractService {
     }
 
     private async saveToCache(KEY: string, data: SkinportItem[]) {
-        await serviceRegister.redis.getClient().set(KEY, JSON.stringify(data), { EX: 60 });
+        await serviceRegister.redis.getClient().set(KEY, JSON.stringify(data), { EX: 60 * 8 });
     }
 
     private  async getFromCache(KEY: string): Promise<SkinportItem[] | undefined> {
