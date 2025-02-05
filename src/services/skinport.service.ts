@@ -5,14 +5,47 @@ import { SkinportItem } from '../types/skinport';
 const TRADABLE_CACHE_KEY = 'tradable';
 const NON_TRADABLE_CACHE_KEY = 'non_tradable';
 
+interface Product {
+    name: string;
+    tradablePrice: number;
+    nonTradablePrice: number;
+}
+
 export class SkinportService extends AbstractService {
-    async loadList(): Promise<any> {
+    async loadList(): Promise<Product[]> {
         const [tradable, nonTradable] = await Promise.all([
             this.getOneList(true),
             this.getOneList(false),
         ]);
 
-        return { tradable, nonTradable }
+
+        const result = new Map<string, Product>();
+
+        tradable.forEach(item => {
+            result.set(item.market_hash_name, {
+                name: item.market_hash_name,
+                tradablePrice: item.min_price,
+                nonTradablePrice: 0,
+            })
+        });
+
+        nonTradable.forEach(item => {
+            let product = result.get(item.market_hash_name);
+            if (product) {
+                product.nonTradablePrice = item.min_price;
+            } else {
+                product = {
+                    name: item.market_hash_name,
+                    tradablePrice: 0,
+                    nonTradablePrice: item.min_price
+                }
+            }
+
+            result.set(item.market_hash_name, product);
+        });
+
+
+        return [...result.values()];
     }
 
     private async getOneList(tradable: boolean): Promise<SkinportItem[]> {
@@ -26,7 +59,7 @@ export class SkinportService extends AbstractService {
             const list = await serviceRegister.skinportClient.loadList(tradable);
 
             this.saveToCache(cacheKey, list).then(() => console.log(cacheKey, 'saved'));
-
+            console.log(list)
             return list;
         } catch (error) {
             return [];

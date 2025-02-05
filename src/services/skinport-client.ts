@@ -19,17 +19,9 @@ export class SkinportClient extends AbstractService {
         this.client = axios.create({
             baseURL: 'https://api.skinport.com/v1',
             headers: {
-                // 'Accept-Encoding': 'br'
+                'Accept-Encoding': 'br'
             }
         });
-    }
-
-    async loadTradable(): Promise<SkinportItem[]> {
-        return this.loadList(true);
-    }
-
-    async loadNonTradable(): Promise<SkinportItem[]> {
-        return this.loadList(false);
     }
 
     async loadList(tradable: boolean): Promise<SkinportItem[]> {

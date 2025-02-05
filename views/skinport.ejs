@@ -5,7 +5,28 @@
   </head>
   <body>
   <%- include('./partials/navigation'); %>
-  <div class="container"></div>
+  <div class="container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Tradable Price</th>
+        <th scope="col">Non Tradable Price</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% for (var i=0; i < products.length; i++) {%>
+        <tr>
+          <th scope="row"><%= i + 1%></th>
+          <td><%= products[i].name %></td>
+          <td><%= products[i].tradablePrice %></td>
+          <td><%= products[i].nonTradablePrice %></td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
   <%- include('./partials/footer'); %>
   </body>
 </html>
