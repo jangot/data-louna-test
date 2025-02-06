@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./partials/head'); %>
+  </head>
+  <body>
+  <%- include('./partials/navigation'); %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Stock</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% for (var i=0; i < products.length; i++) {%>
+        <tr>
+          <th scope="row"><%= products[i].id %></th>
+          <td><%= products[i].name %></td>
+          <td id="product_price_<%= products[i].id %>"><%= products[i].price %></td>
+          <td id="product_count_<%= products[i].id %>"><%= products[i].stock %></td>
+          <td>
+            <% if (typeof user !== 'undefined' && user) { %>
+              <button
+                      data-product-id="<%= products[i].id %>"
+                      class="btn btn-success buy-button"
+                      <% if (user.balance < products[i].price || products[i].stock < 1) { %>
+                        disabled
+                      <% } %>
+              >Buy</button>
+            <% } %>
+          </td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+    <script>
+      document.querySelectorAll('.buy-button').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const id = button.dataset.productId;
+          const response = await fetch(`/api/products/${id}/buy`);
+          if (!response.ok) {
+            alert('Error');
+          } else {
+            const { data: { balance, count } } = await response.json();
+
+            document.getElementById('balance').innerHTML = balance;
+            document.getElementById(`product_count_${id}`).innerHTML = count;
+            if (count < 1) {
+              button.disabled = true;
+            }
+            const price = document.getElementById(`product_price_${id}`).innerHTML;
+            if (Number(price) > balance) {
+              button.disabled = true;
+            }
+          }
+        });
+      });
+
+    </script>
+  </div>
+  <%- include('./partials/footer'); %>
+  </body>
+</html>

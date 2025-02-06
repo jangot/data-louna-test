@@ -1,7 +1,7 @@
 <div class="container">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Demo For DataLouna</a>
+            <a class="navbar-brand" href="/">Demo For DataLouna</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -11,18 +11,25 @@
                         <a class="nav-link active" aria-current="page" href="/skinport">Skinport</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                        <a class="nav-link active" aria-current="page" href="/products">Products</a>
                     </li>
                 </ul>
-<!--                <div class="d-flex align-items-center">-->
-<!--                    <span class="me-2">User</span>-->
-<!--                    <img src="/images/logo.png" width="20" height="20" alt="Аватар" class="rounded-circle">-->
-<!--                </div>-->
                 <ul class="nav">
-                    <li class="nav-item"><a href="/api/auth/logout" class="nav-link link-body-emphasis px-2">Logout</a></li>
-                    <li class="nav-item"><a href="/auth/settings" class="nav-link link-body-emphasis px-2">Settings</a></li>
-                    <li class="nav-item"><a href="/auth/login" class="nav-link link-body-emphasis px-2">Login</a></li>
-                    <li class="nav-item"><a href="/auth/signup" class="nav-link link-body-emphasis px-2">Sign up</a></li>
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <li class="nav-item">
+                            <span class="nav-link link-body-emphasis px-2">
+                                Balance: <span id="balance"><%= user.balance %></span>
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link link-body-emphasis px-2">|</span>
+                        </li>
+                        <li class="nav-item"><a href="/auth/settings" class="nav-link link-body-emphasis px-2">Settings</a></li>
+                        <li class="nav-item"><a href="/api/auth/logout" class="nav-link link-body-emphasis px-2">Logout</a></li>
+                    <% } else { %>
+                        <li class="nav-item"><a href="/auth/login" class="nav-link link-body-emphasis px-2">Login</a></li>
+                        <li class="nav-item"><a href="/auth/signup" class="nav-link link-body-emphasis px-2">Sign up</a></li>
+                    <% } %>
                 </ul>
             </div>
         </div>

@@ -18,6 +18,7 @@ module.exports = class InitMigration {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             );
+            CREATE INDEX idx_account_activity_user_id ON account_activity(user_id);
         `);
 
         await db.client.query(`

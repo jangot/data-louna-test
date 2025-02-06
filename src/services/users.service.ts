@@ -3,13 +3,20 @@ import { UserModel } from '../models/user.model';
 import { AbstractService } from './abstract-service';
 import { serviceRegister } from '../service-register';
 
-const list: UserModel[] = [];
-
 function hashPassword(password: string): string {
     return createHash('md5').update(password).digest('hex');
 }
 
 export class UsersService extends AbstractService {
+    async getBalance(userId: number) {
+        const result = await serviceRegister.db.getClient().query(
+            'SELECT SUM(amount) as balance FROM account_activity WHERE user_id = $1',
+            [userId]
+        );
+
+        return result.rows[0].balance || 0;
+    }
+
     async isUserNameExists(username: string): Promise<boolean> {
         const result = await serviceRegister.db.getClient().query(
             'SELECT username FROM users WHERE username = $1',
@@ -41,7 +48,7 @@ export class UsersService extends AbstractService {
         await serviceRegister.db.getClient().query(
             `
                 INSERT INTO account_activity (user_id, amount, transaction_type, description)
-                VALUES ($1, 100.00, 'deposit', 'Начальный баланс');
+                VALUES ($1, 1000.00, 'deposit', 'started bonus');
             `,
             [user.id]
         )

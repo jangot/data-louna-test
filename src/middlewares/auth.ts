@@ -3,21 +3,35 @@ import { serviceRegister } from '../service-register';
 import { UserModel } from '../models/user.model';
 import { SESSION_COOKIE_NAME } from '../constants';
 
+interface RequestUser extends UserModel {
+    balance?: number;
+}
+
 // @TODO fix the time to AuthorizationRequest some how
 declare module 'express-serve-static-core' {
     interface Request {
-        user: UserModel;
+        user: RequestUser;
     }
+}
+
+export function setUserMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
+    return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
+        if (user) {
+            req.user = user;
+            req.user.balance = await serviceRegister.usersService.getBalance(user.id);
+        }
+
+        next();
+    };
 }
 
 export function getAuthMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
-        if (!user) {
+        if (!req.user) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        req.user = user;
         next();
     };
 }
@@ -37,8 +51,7 @@ export function getPageAuthMiddleware(): (req: Request, res: any, next: (error?:
 
 export function getForbidAuthorizedPageMiddleware(): (req: Request, res: any, next: (error?: any) => void) => void {
     return async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-        const user = await serviceRegister.sessionStorage.getUserBySessionId(req.cookies[SESSION_COOKIE_NAME] || '');
-        if (user) {
+        if (req.user) {
             res.redirect('/auth/settings');
             return
         }
