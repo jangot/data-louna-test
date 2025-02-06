@@ -28,13 +28,25 @@ export class UsersService extends AbstractService {
 
         return result.rows[0];
     }
-    async addUser(user: Omit<UserModel, 'id'>): Promise<UserModel> {
-        const result = await serviceRegister.db.getClient().query(
+    async addUser(rowUserData: Omit<UserModel, 'id'>): Promise<UserModel> {
+        const userResult = await serviceRegister.db.getClient().query(
             'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *',
-            [user.username, hashPassword(user.password)]
+            [rowUserData.username, hashPassword(rowUserData.password)]
+        );
+        const user = userResult.rows[0];
+        if (!user) {
+            throw new Error('User was not created');
+        }
+
+        await serviceRegister.db.getClient().query(
+            `
+                INSERT INTO account_activity (user_id, amount, transaction_type, description)
+                VALUES ($1, 100.00, 'deposit', 'Начальный баланс');
+            `,
+            [user.id]
         )
 
-        return result.rows[0];
+        return userResult.rows[0];
     }
 
     async setNewPassword(id: number, rawPassword: string) {
@@ -46,3 +58,5 @@ export class UsersService extends AbstractService {
         )
     }
 }
+
+
