@@ -5,6 +5,7 @@ import { RedisService } from './services/redis.service';
 import { SkinportClient } from './services/skinport-client';
 import { SkinportService } from './services/skinport.service';
 import { ProductsService } from './services/products-service';
+import { JobsService } from './services/jobs.service';
 
 export interface ApplicationService {
     init: () => Promise<void>,
@@ -19,4 +20,5 @@ export const serviceRegister = {
     skinportClient: new SkinportClient(),
     skinportService: new SkinportService(),
     productsService: new ProductsService(),
+    jobs: new JobsService(),
 }
