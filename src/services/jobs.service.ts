@@ -5,6 +5,7 @@ export class JobsService extends AbstractService {
     private interval: any;
 
     async init(): Promise<void> {
+        console.log('Loading project please wait...');
         await serviceRegister.skinportService.loadList();
         this.interval = setInterval(async () => {
             await serviceRegister.skinportService.loadList();
