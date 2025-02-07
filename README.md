@@ -20,3 +20,6 @@ This is a test projects and migrations doesn't support rollback.
 $ npm run dev
 ```
 
+open http://localhost:8080
+
+
