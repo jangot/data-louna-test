@@ -48,7 +48,7 @@ export class UsersService extends AbstractService {
         await serviceRegister.db.getClient().query(
             `
                 INSERT INTO account_activity (user_id, amount, transaction_type, description)
-                VALUES ($1, 1000.00, 'deposit', 'started bonus');
+                VALUES ($1, 400.00, 'deposit', 'started bonus');
             `,
             [user.id]
         )
