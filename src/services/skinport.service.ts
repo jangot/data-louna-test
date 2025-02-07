@@ -47,7 +47,7 @@ export class SkinportService extends AbstractService {
         return [...result.values()];
     }
 
-    private async getOneList(tradable: boolean): Promise<SkinportItem[]> {
+    public async getOneList(tradable: boolean): Promise<SkinportItem[]> {
         const cacheKey = tradable ? TRADABLE_CACHE_KEY : NON_TRADABLE_CACHE_KEY;
         const cache = await this.getFromCache(cacheKey);
         if (cache) {
